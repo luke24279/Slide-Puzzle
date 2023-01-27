@@ -1,0 +1,125 @@
+<html>
+<div id="puzzle">
+  <div class="pieces" id="piece1"></div>
+  <div class="pieces" id="piece2"></div>
+  <div class="pieces" id="piece3"></div>
+  <div class="pieces" id="piece4"></div>
+  <div class="pieces" id="piece5"></div>
+  <div class="pieces" id="piece6"></div>
+  <div class="pieces" id="piece7"></div>
+  <div class="pieces" id="piece8"></div>
+  <div class="empty"></div>
+</div>
+
+<style>
+  #puzzle {
+    width: 300px;
+    height: 300px;
+    border: 1px solid black;
+    position: relative;
+  }
+
+  .pieces {
+    width: 100px;
+    height: 100px;
+    background-color: blue;
+    position: absolute;
+  }
+
+  .empty {
+    width: 100px;
+    height: 100px;
+    background-color: white;
+    position: absolute;
+  }
+</style>
+<script>
+  // Initialize puzzle pieces and empty space
+  const pieces = document.querySelectorAll('.pieces');
+  const emptySpace = document.querySelector('.empty');
+
+  // Store solved positions for each pieces
+  const solvedPositions = [];
+  for (let i = 0; i < pieces.length; i++) {
+    solvedPositions.push({
+      left: pieces[i].style.left,
+      top: pieces[i].style.top
+    });
+  }
+
+  // Shuffle puzzle pieces
+  function shuffle() {
+    for (let i = 0; i < pieces.length; i++) {
+      const randomIndex = Math.floor(Math.random() * pieces.length);
+      [pieces[i].style.left, pieces[randomIndex].style.left] = [pieces[randomIndex].style.left, pieces[i].style.left];
+      [pieces[i].style.top, pieces[randomIndex].style.top] = [pieces[randomIndex].style.top, pieces[i].style.top];
+    }
+  }
+
+  // Check if puzzle is solved
+  function isSolved() {
+    for (let i = 0; i < pieces.length; i++) {
+      if (pieces[i].style.left !== solvedPositions[i].left || pieces[i].style.top !== solvedPositions[i].top) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+
+
+  // Shuffle puzzle pieces when page loads
+  shuffle();
+
+  // Add a reset button
+  const resetButton = document.createElement("button");
+  resetButton.innerHTML = "Reset";
+  document.body.appendChild(resetButton);
+  resetButton.addEventListener("click", shuffle);
+
+  // Add a timer
+  let startTime;
+  let endTime;
+  let totalTime;
+
+  startTime = new Date().getTime();
+  resetButton.addEventListener("click", () => {
+    startTime = new Date().getTime();
+  });
+
+  pieces.forEach(pieces => {
+    pieces.addEventListener('click', () => {
+      // Get position of clicked pieces
+      const x = parseInt(pieces.style.left) / 100;
+      const y = parseInt(pieces.style.top) / 100;
+
+      // Get position of empty space
+      const ex = parseInt(emptySpace.style.left) / 100;
+      const ey = parseInt(emptySpace.style.top) / 100;
+
+      // Check if clicked pieces can be moved
+      if ((x === ex && (y === ey - 1 || y === ey + 1)) || (y === ey && (x === ex - 1 || x === ex + 1))) {
+        // Swap clicked pieces and empty space
+        [pieces.style.left, emptySpace.style.left] = [emptySpace.style.left, pieces.style.left];
+        [pieces.style.top, emptySpace.style.top] = [emptySpace.style.top, pieces.style.top];
+
+        // Check if puzzle is solved
+        if (isSolved()) {
+          endTime = new Date().getTime();
+          totalTime = (endTime - startTime) / 1000; // calculate time in seconds
+          alert(`Congratulations! You solved the puzzle in ${totalTime} seconds!`);
+        }
+      }
+    });
+  });
+
+
+
+
+
+</script>
+
+
+
+
+</html>
